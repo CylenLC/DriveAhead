@@ -6,13 +6,23 @@ from typing import Any, Literal
 
 from driveahead.core.input import PlayerInput
 
-MessageType = Literal["hello", "input", "snapshot"]
+MessageType = Literal["hello", "welcome", "input", "snapshot"]
 
 
 @dataclass(frozen=True)
 class HelloMessage:
     type: Literal["hello"]
     player_name: str
+    protocol_version: int = 1
+
+
+@dataclass(frozen=True)
+class WelcomeMessage:
+    type: Literal["welcome"]
+    assigned_player_id: int
+    map_key: str
+    player_1_vehicle_key: str
+    player_2_vehicle_key: str
     protocol_version: int = 1
 
 
@@ -34,24 +44,32 @@ class InputMessage:
 @dataclass(frozen=True)
 class VehicleSnapshot:
     player_id: int
+    vehicle_key: str
     x: float
     y: float
     angle: float
     vx: float
     vy: float
     angular_velocity: float
+    front_wheel_x: float
+    front_wheel_y: float
+    rear_wheel_x: float
+    rear_wheel_y: float
+    head_x: float
+    head_y: float
 
 
 @dataclass(frozen=True)
 class GameSnapshotMessage:
     type: Literal["snapshot"]
     tick: int
+    map_key: str
     scores: dict[int, int]
     vehicles: tuple[VehicleSnapshot, ...]
     winner_id: int | None = None
 
 
-ProtocolMessage = HelloMessage | InputMessage | GameSnapshotMessage
+ProtocolMessage = HelloMessage | WelcomeMessage | InputMessage | GameSnapshotMessage
 
 
 def encode_message(message: ProtocolMessage) -> bytes:
@@ -64,6 +82,8 @@ def decode_message(data: bytes) -> ProtocolMessage:
     message_type = payload.get("type")
     if message_type == "hello":
         return HelloMessage(**payload)
+    if message_type == "welcome":
+        return WelcomeMessage(**payload)
     if message_type == "input":
         return InputMessage(**payload)
     if message_type == "snapshot":
@@ -72,6 +92,7 @@ def decode_message(data: bytes) -> ProtocolMessage:
         return GameSnapshotMessage(
             type="snapshot",
             tick=payload["tick"],
+            map_key=payload["map_key"],
             scores=scores,
             vehicles=vehicles,
             winner_id=payload.get("winner_id"),

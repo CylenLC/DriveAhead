@@ -24,6 +24,21 @@ uv sync --extra dev
 uv run python -m driveahead
 ```
 
+LAN host:
+
+```bash
+uv run python -m driveahead --host
+```
+
+LAN client:
+
+```bash
+uv run python -m driveahead --join HOST_IP
+```
+
+LAN mode uses UDP port `38271` by default. To use a different port, pass
+`--port PORT` on both machines.
+
 Controls:
 
 | Action | Player 1 | Player 2 |
@@ -38,6 +53,9 @@ Controls:
 | Cycle P2 car | 2 | 2 |
 | Start / restart | Enter | Enter |
 | Quit | Esc | Esc |
+
+In LAN mode, Host is Player 1 and Client is Player 2. Both machines use the
+Player 1 keyboard layout locally.
 
 ## Extend Content
 

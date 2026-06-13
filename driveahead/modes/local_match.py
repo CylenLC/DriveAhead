@@ -71,16 +71,21 @@ def _make_game(map_index: int, p1_vehicle_index: int, p2_vehicle_index: int) -> 
     return Game(MAPS[map_index], VEHICLES[p1_vehicle_index], VEHICLES[p2_vehicle_index])
 
 
+def read_local_player_input() -> PlayerInput:
+    keys = pygame.key.get_pressed()
+    return PlayerInput(
+        accelerate=keys[pygame.K_d],
+        brake=keys[pygame.K_a],
+        rotate_left=keys[pygame.K_w],
+        rotate_right=keys[pygame.K_s],
+        boost=keys[pygame.K_LSHIFT],
+    )
+
+
 def _read_keyboard() -> dict[int, PlayerInput]:
     keys = pygame.key.get_pressed()
     return {
-        1: PlayerInput(
-            accelerate=keys[pygame.K_d],
-            brake=keys[pygame.K_a],
-            rotate_left=keys[pygame.K_w],
-            rotate_right=keys[pygame.K_s],
-            boost=keys[pygame.K_LSHIFT],
-        ),
+        1: read_local_player_input(),
         2: PlayerInput(
             accelerate=keys[pygame.K_LEFT],
             brake=keys[pygame.K_RIGHT],
